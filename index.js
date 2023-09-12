@@ -25,9 +25,31 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const usersCollection = client.db("bistroDb").collection("users");
     const menuCollection = client.db("bistroDb").collection("menu");
     const reviewCollection = client.db("bistroDb").collection("reviews");
     const cartCollection = client.db("bistroDb").collection("carts");
+
+//find all users
+app.get("users", async(req,res)=>{
+  const result= await usersCollection.find().toArray()
+res.send(result)
+})
+
+
+
+
+    //create user and data save in the data-base
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query={email:user.email}
+      const existingUser= await usersCollection.findOne(query)
+      if(existingUser){
+        return res.send({message:'user already exits'})
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
 
     // for  load  all menu data using find
     app.get("/menu", async (req, res) => {
