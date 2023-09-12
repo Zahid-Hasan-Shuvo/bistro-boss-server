@@ -2,8 +2,10 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const dotenv = require("dotenv").config();
-const port = process.env.PORT || 3000;
+const jwt = require('jsonwebtoken');
+// const axios = require('axios').default;
+ require("dotenv").config();
+const port = process.env.PORT||3000;
 
 app.use(cors());
 app.use(express.json());
@@ -37,6 +39,12 @@ res.send(result)
 })
 
 
+app.post('/jwt', (req, res) => {
+  const user = req.body;
+  const token = jwt.sign(user, process.env.ACCESS_TOCKEN_SECRET, { expiresIn: '1h' })
+
+  res.send({ token })
+})
 
 
     //create user and data save in the data-base
@@ -52,7 +60,7 @@ res.send(result)
     });
 
 
-app.patch('/users/admin/:id',async(req,res)=>{
+app.patch('/users/admin/:id',  async(req,res)=>{
   const id=req.params.id;
   const filter ={_id: new ObjectId(id)};
   const updateDoc = {
@@ -60,7 +68,7 @@ app.patch('/users/admin/:id',async(req,res)=>{
       role: 'admin'
     },
   }
-  const result = await users.updateOne(filter, updateDoc);
+  const result = await usersCollection.updateOne(filter, updateDoc);
   res.send(result)
 })
 
