@@ -63,7 +63,7 @@ async function run() {
     app.post("/jwt", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOCKEN_SECRET, {
-        expiresIn: "1h",
+        expiresIn: '4h',
       });
 
       res.send({ token });
@@ -80,6 +80,18 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
+
+
+
+app.get('/users/admin/:email', async(req,res)=>{
+  const email= req.params.email;
+  const query= {email: email}
+  const user= await usersCollection.findOne(query)
+  const result= {admin: user?.role==='admin'}
+  res.send(result)
+})
+
+
 
     app.patch("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
